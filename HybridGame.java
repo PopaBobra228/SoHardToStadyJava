@@ -1,6 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-
+ctvybuno,pl
 enum GameState {
     MAIN_MENU,
     SNAKE_GAME,
