@@ -1,13 +1,11 @@
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.List;
 import java.util.Random;
-import java.util.ArrayList;
 
 public class SnakeGamePanel extends JPanel implements ActionListener, KeyListener {
-    private static final int PANEL_WIDTH = 1000;
-    private static final int PANEL_HEIGHT = 1000;
+    private static final int PANEL_WIDTH = 800;
+    private static final int PANEL_HEIGHT = 800;
     private static final int UNIT_SIZE = 20;
     private static final int GAME_UNITS = (PANEL_WIDTH * PANEL_HEIGHT) / UNIT_SIZE;
     private static final int DELAY = 75;
@@ -31,11 +29,15 @@ public class SnakeGamePanel extends JPanel implements ActionListener, KeyListene
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
         this.addKeyListener(this);
+        startGame();
     }
 
     public void startGame() {
         newApple();
         running = true;
+        bodyParts = 6;
+        applesEaten = 0;
+        direction = 'R';
         timer = new Timer(DELAY, this);
         timer.start();
     }
@@ -59,7 +61,7 @@ public class SnakeGamePanel extends JPanel implements ActionListener, KeyListene
             g.setColor(Color.RED);
             g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
         } else {
-            gameOver(g);
+            gameOver();
         }
     }
 
@@ -103,39 +105,26 @@ public class SnakeGamePanel extends JPanel implements ActionListener, KeyListene
         for (int i = bodyParts; i > 0; i--) {
             if ((x[0] == x[i]) && (y[0] == y[i])) {
                 running = false;
+                break;
             }
         }
 
-        if (x[0] < 0) {
-            running = false;
-            hybridGame.setState(GameState.SHOOTER_GAME);
-        }
-
-        if (x[0] > PANEL_WIDTH) {
-            running = false;
-        }
-
-        if (y[0] < 0) {
-            running = false;
-        }
-
-        if (y[0] > PANEL_HEIGHT) {
+        if (x[0] < 0 || x[0] >= PANEL_WIDTH || y[0] < 0 || y[0] >= PANEL_HEIGHT) {
             running = false;
         }
 
         if (!running) {
             timer.stop();
-            
+            gameOver();
         }
     }
 
-    public void gameOver(Graphics g) {
-        g.setColor(Color.red);
-        g.setFont(new Font("Ink Free", Font.BOLD, 40));
-        FontMetrics metrics = getFontMetrics(g.getFont());
-        g.drawString("Score: " + applesEaten, (PANEL_WIDTH - metrics.stringWidth("Score: " + applesEaten)) / 2,
-                g.getFont().getSize());
-        hybridGame.setState(GameState.SHOOTER_GAME);
+    public void gameOver() {
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(this, "Game Over! Score: " + applesEaten, "Game Over",
+                    JOptionPane.INFORMATION_MESSAGE);
+            hybridGame.setState(GameState.SHOOTER_GAME);
+        });
     }
 
     @Override
@@ -154,6 +143,11 @@ public class SnakeGamePanel extends JPanel implements ActionListener, KeyListene
             case KeyEvent.VK_LEFT:
                 if (direction != 'R') {
                     direction = 'L';
+                }
+                break;
+            case KeyEvent.VK_RIGHT:
+                if (direction != 'L') {
+                    direction = 'R';
                 }
                 break;
             case KeyEvent.VK_UP:
