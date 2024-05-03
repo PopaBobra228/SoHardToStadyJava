@@ -21,15 +21,22 @@ public class SnakeGamePanel extends JPanel implements ActionListener, KeyListene
     private Timer timer;
     private Random random;
     private HybridGame hybridGame;
+    private Image background;
 
     public SnakeGamePanel(HybridGame hybridGame) {
         this.hybridGame = hybridGame;
         random = new Random();
+        loadBackground();
         this.setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
         this.addKeyListener(this);
         startGame();
+    }
+
+    private void loadBackground() {
+        ImageIcon ii = new ImageIcon("background.jpg");
+        background = ii.getImage();
     }
 
     public void startGame() {
@@ -44,7 +51,12 @@ public class SnakeGamePanel extends JPanel implements ActionListener, KeyListene
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        drawBackground(g);
         draw(g);
+    }
+
+    private void drawBackground(Graphics g) {
+        g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
     }
 
     public void draw(Graphics g) {
